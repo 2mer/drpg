@@ -12,25 +12,39 @@ export default function useCharacterController() {
 			const newPos = { ...state.position };
 			posTransformer(newPos);
 
-			function moveToPos() {
-				if (newPos.y > state.position.y) {
+			function moveToPos({ canGainMomentum = true } = {}) {
+				if (world.emit('tryMove', { ...newPos, preventDefault: false }).preventDefault) return;
+
+				if (newPos.x < 0) return;
+				if (newPos.x > 4) return;
+
+				if (canGainMomentum && newPos.y > state.position.y) {
 					state.velocity++;
 				}
 
-				posTransformer(state.position);
+
+				if (!world.emit('move', { ...newPos, preventDefault: false }).preventDefault) {
+					posTransformer(state.position);
+				}
 			}
 
 			const tile = world.at(newPos.x, newPos.y);
 			if (tile.toughness > 0) {
 				if (state.velocity < 1) return;
 
+				if (world.emit('damage', { ...newPos, preventDefault: false, tile }).preventDefault) return;
+
 				let newTile = { ...tile };
 				newTile.toughness--;
 				state.velocity--;
 
 				if (newTile.toughness === 0) {
+					if (world.emit('break', { ...newPos, preventDefault: false, tile: newTile }).preventDefault) return;
+
+					state.pendingCurrency += tile.score;
+
 					newTile = tiles.air;
-					moveToPos();
+					moveToPos({ canGainMomentum: false });
 				}
 
 				state.world[hashPos(newPos.x, newPos.y)] = newTile;
@@ -46,13 +60,13 @@ export default function useCharacterController() {
 
 	useHotkeys([
 		['s', goDown],
-		['down', goDown],
+		['ArrowDown', goDown],
 		['space', goDown],
 
 		['a', goLeft],
-		['left', goLeft],
+		['ArrowLeft', goLeft],
 
 		['d', goRight],
-		['right', goRight],
+		['ArrowRight', goRight],
 	]);
 }

@@ -1,5 +1,6 @@
 import { WORLD_HEIGHT, WORLD_WIDTH } from "./constants";
 import { R21 } from "./random";
+import regions from "./regions";
 import tiles, { ITile } from "./tiles";
 
 export function getWeighted<T>(r: number, entries: ([weight: number, item: T])[]): T {
@@ -19,27 +20,11 @@ export function getWeighted<T>(r: number, entries: ([weight: number, item: T])[]
 
 export function generateTile(x: number, y: number): ITile {
 
-	if (y < 0) return tiles.air;
+	const matchingRegion = regions.find(r => r.contains(x, y));
 
-	if (y < 30) return getWeighted(R21(x, y), [
-		[50, tiles.dirt],
-		[20, tiles.air],
-		[1, tiles.box],
-	]);
+	if (!matchingRegion) return tiles.air;
 
-	if (y < 100) return getWeighted(R21(x, y), [
-		[30, tiles.stone],
-		[20, tiles.dirt],
-		[10, tiles.air],
-		[5, tiles.box],
-	]);
-
-	return getWeighted(R21(x, y), [
-		[60, tiles.stone],
-		[20, tiles.dirt],
-		[10, tiles.air],
-		[5, tiles.box],
-	]);
+	return matchingRegion.generateTile(x, y);
 }
 
 export function generateDepth(y: number, width: number = WORLD_WIDTH) {

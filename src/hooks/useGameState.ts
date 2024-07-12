@@ -5,11 +5,16 @@ import { ITile } from "../logic/world/tiles";
 
 export type GameState = {
 	currency: number,
+	pendingCurrency: number,
 	upgrades: [],
 	position: { x: number, y: number },
 	velocity: number;
 	falling: boolean,
-	world: { [key: string]: ITile }
+	run: number,
+	world: { [key: string]: ITile },
+	preferences: {
+		currencyDisplay?: 'both' | 'bank' | 'pending',
+	},
 }
 
 export function useGameState() {
@@ -18,11 +23,14 @@ export function useGameState() {
 		getInitialValueInEffect: false,
 		defaultValue: {
 			currency: 0,
+			pendingCurrency: 0,
+			run: 0,
 			falling: false,
 			position: { x: 2, y: -5 },
 			upgrades: [],
 			velocity: 0,
 			world: {},
+			preferences: {},
 		}
 	})
 

@@ -13,7 +13,7 @@ export type ITile = {
 	name: string;
 	image: string;
 	toughness: number;
-	score?: number;
+	score: number;
 };
 
 
@@ -24,6 +24,7 @@ const tiles = {
 		name: 'Drill',
 		image: images.drill_01,
 		toughness: -1,
+		score: 0,
 	},
 
 	air: {
@@ -31,6 +32,8 @@ const tiles = {
 		name: 'Air',
 		image: images.air,
 		toughness: 0,
+		score: 0,
+
 	},
 
 	dirt: {
@@ -39,6 +42,7 @@ const tiles = {
 		image: images.dirt,
 		toughness: 1,
 		score: 1,
+
 	},
 
 	box: {
@@ -46,7 +50,7 @@ const tiles = {
 		name: 'Box',
 		image: images.box,
 		toughness: 1,
-		score: 100,
+		score: 10,
 	},
 
 	stone: {
@@ -56,6 +60,14 @@ const tiles = {
 		toughness: 2,
 		score: 2,
 	},
+
+	homePortal: {
+		id: 'homePortal',
+		name: 'Home Portal',
+		image: images.homePortal,
+		toughness: 0,
+		score: 0,
+	}
 
 
 } satisfies { [key: string]: ITile }

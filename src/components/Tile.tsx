@@ -9,19 +9,21 @@ function Tile({
 	y,
 	gx,
 	gy,
+	run,
 }: {
 	tile: ITile;
 	x: number;
 	y: number;
 	gx: number;
 	gy: number;
+	run: number;
 }) {
 	const player = isPlayer(tile);
 
 	return (
 		<motion.div
 			layout='position'
-			layoutId={player ? 'player' : hashPos(x, y)}
+			layoutId={player ? 'player' : hashPos(x, y) + '-' + run}
 			className='w-[64px] h-[64px] absolute'
 			data-tile-id={tile.name}
 			initial={{ scale: 0 }}

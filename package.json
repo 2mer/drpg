@@ -12,10 +12,12 @@
   "dependencies": {
     "@mantine/hooks": "^7.11.1",
     "@sgty/kontext-react": "^0.0.0",
+    "eventemitter3": "^5.0.1",
     "framer-motion": "^11.2.13",
     "immer": "^10.1.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
