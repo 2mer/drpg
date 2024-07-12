@@ -11,7 +11,7 @@ export type Region = {
 };
 
 export function range(min: number, max: number) {
-	return (x: number, y: number) => y >= min && y <= max;
+	return (_x: number, y: number) => y >= min && y <= max;
 }
 
 export function weights(w: [weight: number, item: ITile][]) {

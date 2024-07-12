@@ -1,6 +1,6 @@
 import { createContext } from "@sgty/kontext-react";
 import { useGameState } from "./useGameState";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { generateTile } from "../logic/world/generation";
 import tiles, { ITile } from "../logic/world/tiles";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../logic/world/constants";
