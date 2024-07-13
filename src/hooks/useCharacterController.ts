@@ -9,11 +9,12 @@ export default function useCharacterController() {
 
 	function tryGo(posTransformer: (pos: { x: number, y: number }) => void) {
 		update((state) => {
+			const { dimension } = state;
 			const newPos = { ...state.position };
 			posTransformer(newPos);
 
 			function moveToPos({ canGainMomentum = true } = {}) {
-				if (world.emit('tryMove', { ...newPos, preventDefault: false }).preventDefault) return;
+				if (world.emit('tryMove', { ...newPos, dimension, preventDefault: false }).preventDefault) return;
 
 				if (newPos.x < 0) return;
 				if (newPos.x > 4) return;
@@ -23,23 +24,23 @@ export default function useCharacterController() {
 				}
 
 
-				if (!world.emit('move', { ...newPos, preventDefault: false }).preventDefault) {
+				if (!world.emit('move', { ...newPos, dimension, preventDefault: false }).preventDefault) {
 					posTransformer(state.position);
 				}
 			}
 
-			const tile = world.at(newPos.x, newPos.y);
+			const tile = world.at(dimension, newPos.x, newPos.y);
 			if (tile.toughness > 0) {
 				if (state.velocity < 1) return;
 
-				if (world.emit('damage', { ...newPos, preventDefault: false, tile }).preventDefault) return;
+				if (world.emit('damage', { ...newPos, dimension, preventDefault: false, tile }).preventDefault) return;
 
 				let newTile = { ...tile };
 				newTile.toughness--;
 				state.velocity--;
 
 				if (newTile.toughness === 0) {
-					if (world.emit('break', { ...newPos, preventDefault: false, tile: newTile }).preventDefault) return;
+					if (world.emit('break', { ...newPos, dimension, preventDefault: false, tile: newTile }).preventDefault) return;
 
 					state.pendingCurrency += tile.score;
 

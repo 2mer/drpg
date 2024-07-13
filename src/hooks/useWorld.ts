@@ -11,10 +11,10 @@ export function hashPos(x: number, y: number) {
 }
 
 export type WorldEvents = {
-	move: (e: { x: number, y: number, preventDefault: boolean }) => void;
-	tryMove: (e: { x: number, y: number, preventDefault: boolean }) => void;
-	damage: (e: { x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
-	break: (e: { x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
+	move: (e: { dimension: string, x: number, y: number, preventDefault: boolean }) => void;
+	tryMove: (e: { dimension: string, x: number, y: number, preventDefault: boolean }) => void;
+	damage: (e: { dimension: string, x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
+	break: (e: { dimension: string, x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
 }
 
 export const WorldContext = createContext(() => {
@@ -24,19 +24,19 @@ export const WorldContext = createContext(() => {
 
 		const events = new EventEmitter<WorldEvents>();
 
-		function at(x: number, y: number) {
+		function at(dimension: string, x: number, y: number) {
 			if ((x === state.position.x) && (y === state.position.y)) return tiles.drill;
 
 			const hashed = state.world[hashPos(x, y)];
 			if (hashed) return hashed;
 
-			return generateTile(x, y);
+			return generateTile(dimension, x, y);
 		}
 
 		return {
 			at,
 			tiles: Array(WORLD_HEIGHT).fill(null).map((_, iY) => {
-				return Array(WORLD_WIDTH).fill(null).map((_, iX) => at(iX, state.position.y + iY))
+				return Array(WORLD_WIDTH).fill(null).map((_, iX) => at(state.dimension, iX, state.position.y + iY))
 			}),
 
 			events,
@@ -53,8 +53,8 @@ export const WorldContext = createContext(() => {
 		if (!world) return;
 
 		world.events.on('move', (e) => {
-			const { x, y } = e;
-			const tile = world.at(x, y);
+			const { x, y, dimension } = e;
+			const tile = world.at(dimension, x, y);
 
 
 			if (tile.id === tiles.homePortal.id) {
@@ -68,6 +68,7 @@ export const WorldContext = createContext(() => {
 					state.world = {};
 					state.currency += state.pendingCurrency;
 					state.pendingCurrency = 0;
+					state.dimension = 'overworld';
 				})
 
 				return;

@@ -7,6 +7,7 @@ export type GameState = {
 	currency: number,
 	pendingCurrency: number,
 	upgrades: [],
+	dimension: string,
 	position: { x: number, y: number },
 	velocity: number;
 	falling: boolean,
@@ -22,6 +23,7 @@ export function useGameState() {
 		key: 'drpg-game-state',
 		getInitialValueInEffect: false,
 		defaultValue: {
+			dimension: 'tutorial',
 			currency: 0,
 			pendingCurrency: 0,
 			run: 0,

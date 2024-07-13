@@ -64,8 +64,11 @@ function ActionBar() {
 					role='button'
 					onClick={() => {
 						if (
-							world.at(state.position.x, state.position.y + 1)
-								.id !== tiles.air.id
+							world.at(
+								state.dimension,
+								state.position.x,
+								state.position.y + 1
+							).id !== tiles.air.id
 						)
 							return;
 

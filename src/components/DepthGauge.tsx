@@ -7,7 +7,7 @@ import miniBlockImage from '../assets/ui/miniBlock.png';
 function DepthGauge() {
 	const [state] = useGameState();
 
-	const matchingRegion = regions.find((r) =>
+	const matchingRegion = regions[state.dimension].find((r) =>
 		r.contains(state.position.x, state.position.y)
 	);
 

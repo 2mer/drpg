@@ -23,9 +23,25 @@ export type Orientation = 'horizontal' | 'vertical';
 export type OverflowStrategy = 'clamp' | 'cyclic';
 
 const directions = {
-	horizontal: 'to left',
+	horizontal: 'to right',
 	vertical: 'to bottom',
 };
+
+function nearestBasePower(value: number, base: number): number {
+	if (value <= 0) return 0;
+
+	if (base <= 1) {
+		throw new Error(
+			'Value must be greater than 0 and base must be greater than 1.'
+		);
+	}
+
+	let power = 1;
+	while (base ** power <= value) {
+		power++;
+	}
+	return power - 1;
+}
 
 function NumberRenderer({
 	value,
@@ -39,8 +55,10 @@ function NumberRenderer({
 	overflow?: OverflowStrategy;
 }) {
 	const clamped = Math.max(0, value);
-	let d = Math.floor(clamped / BARS);
-	let r = clamped % BARS;
+	const nearestPow = nearestBasePower(clamped, BARS);
+	const nextThreshold = Math.pow(BARS, nearestPow + 1);
+	let d = nearestPow;
+	let r = Math.floor((clamped / nextThreshold) * BARS);
 
 	if (d > PALLETTE.length - 1) {
 		if (overflow === 'clamp') {
@@ -51,8 +69,11 @@ function NumberRenderer({
 		}
 	}
 
-	const bgColor = PALLETTE[d];
+	// const bgColor = PALLETTE[d];
+	const bgColor = 'transparent';
 	const fgColor = PALLETTE[d + 1];
+
+	console.log({ clamped, nearestPow, nextThreshold, d, r });
 
 	function createGradient(bars: number, bg: boolean) {
 		const style = {
@@ -64,7 +85,7 @@ function NumberRenderer({
 				? {
 						top: 0,
 						left: 0,
-						width: `${Math.round((bars / BARS) * 100)}%`,
+						width: `${Math.floor((bars / BARS) * 100)}%`,
 						height: '100%',
 						backgroundRepeat: 'repeat-x',
 						backgroundSize: `${PX * 2}px 64px`,

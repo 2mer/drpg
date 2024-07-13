@@ -1,6 +1,7 @@
 import { getWeighted } from "./generation";
 import { R21 } from "./random";
 import tiles, { ITile } from "./tiles";
+import infoTexture from '../../assets/ui/info.png'
 
 export type Region = {
 	id: string;
@@ -18,47 +19,77 @@ export function weights(w: [weight: number, item: ITile][]) {
 	return (x: number, y: number) => getWeighted(R21(x, y), w);
 }
 
-export default [
-	{
-		id: 'spawn',
-		name: 'Drop ship',
-		image: tiles.air.image,
-		contains: range(-Infinity, -1),
-		generateTile: () => tiles.air,
-	},
-	{
-		id: 'entrance',
-		name: 'Entrance',
-		image: tiles.dirt.image,
-		contains: range(0, 30),
-		generateTile: weights([
-			[50, tiles.dirt],
-			[20, tiles.air],
-			[1, tiles.box],
-		]),
-	},
-	{
-		id: 'layer1',
-		name: 'Rocky falls',
-		image: tiles.stone.image,
-		contains: range(31, 100),
-		generateTile: weights([
-			[30, tiles.stone],
-			[20, tiles.dirt],
-			[10, tiles.air],
-			[1, tiles.box],
-		]),
-	},
-	{
-		id: 'layer1-depths',
-		name: 'Rocky falls depths',
-		image: tiles.stone.image,
-		contains: range(101, Infinity),
-		generateTile: weights([
-			[60, tiles.stone],
-			[20, tiles.dirt],
-			[10, tiles.air],
-			[5, tiles.box],
-		]),
-	},
-] satisfies Region[];
+export default {
+	tutorial: [
+		{
+			id: 'spawn',
+			name: 'Drop ship',
+			image: infoTexture,
+			contains: range(-Infinity, -1),
+			generateTile: () => tiles.air,
+		},
+		{
+			id: 'entrance',
+			name: 'Entrance',
+			image: infoTexture,
+			contains: range(0, 30),
+			generateTile: weights([
+				[20, tiles.air],
+				[1, tiles.box],
+			]),
+		},
+		{
+			id: 'portals',
+			name: 'portals',
+			image: infoTexture,
+			contains: range(31, 31),
+			generateTile: weights([
+				[1, tiles.homePortal],
+			]),
+		},
+	],
+	overworld: [
+		{
+			id: 'spawn',
+			name: 'Drop ship',
+			image: tiles.air.image,
+			contains: range(-Infinity, -1),
+			generateTile: () => tiles.air,
+		},
+		{
+			id: 'entrance',
+			name: 'Entrance',
+			image: tiles.dirt.image,
+			contains: range(0, 30),
+			generateTile: weights([
+				[50, tiles.dirt],
+				[20, tiles.air],
+				[1, tiles.box],
+			]),
+		},
+		{
+			id: 'layer1',
+			name: 'Rocky falls',
+			image: tiles.stone.image,
+			contains: range(31, 100),
+			generateTile: weights([
+				[30, tiles.stone],
+				[20, tiles.dirt],
+				[10, tiles.air],
+				[1, tiles.box],
+			]),
+		},
+		{
+			id: 'layer1-depths',
+			name: 'Rocky falls depths',
+			image: tiles.stone.image,
+			contains: range(101, Infinity),
+			generateTile: weights([
+				[60, tiles.stone],
+				[20, tiles.dirt],
+				[10, tiles.air],
+				[5, tiles.box],
+			]),
+		},
+	]
+} as Record<string, Region[]>;

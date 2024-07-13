@@ -17,19 +17,19 @@ export function getWeighted<T>(r: number, entries: ([weight: number, item: T])[]
 	return entries[entries.length - 1][1];
 }
 
-export function generateTile(x: number, y: number): ITile {
+export function generateTile(dimension: string, x: number, y: number): ITile {
 
-	const matchingRegion = regions.find(r => r.contains(x, y));
+	const matchingRegion = regions[dimension].find(r => r.contains(x, y));
 
 	if (!matchingRegion) return tiles.air;
 
 	return matchingRegion.generateTile(x, y);
 }
 
-export function generateDepth(y: number, width: number = WORLD_WIDTH) {
-	return Array(width).fill(null).map((_, i) => generateTile(i, y));
+export function generateDepth(dimension: string, y: number, width: number = WORLD_WIDTH) {
+	return Array(width).fill(null).map((_, i) => generateTile(dimension, i, y));
 }
 
-export function generateRange(y: number, height: number = WORLD_HEIGHT) {
-	return Array(height).fill(null).map((_, i) => generateDepth(y + i))
+export function generateRange(dimension: string, y: number, height: number = WORLD_HEIGHT) {
+	return Array(height).fill(null).map((_, i) => generateDepth(dimension, y + i))
 }
