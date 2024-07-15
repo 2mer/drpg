@@ -1,7 +1,9 @@
-import { motion } from 'framer-motion';
-import { isPlayer, ITile } from '../logic/world/tiles';
+import { AnimatePresence, motion } from 'framer-motion';
+import tiles, { isPlayer, isShop, ITile } from '../logic/world/tiles';
 import Velocity from './Velocity';
 import { hashPos } from '../hooks/useWorld';
+import brokenOverlay from '../assets/tiles/broken.png';
+import ShopIndication from './ShopIndication';
 
 function Tile({
 	tile,
@@ -19,6 +21,10 @@ function Tile({
 	run: number;
 }) {
 	const player = isPlayer(tile);
+	// @ts-ignore
+	const health = tile.toughness / tiles[tile.id].toughness;
+
+	const shop = isShop(tile);
 
 	return (
 		<motion.div
@@ -37,16 +43,28 @@ function Tile({
 			style={{ left: gx * 64, top: gy * 64 }}
 		>
 			<div className='w-[64px] h-[64px] relative'>
-				<div className='absolute inset-0 flex justify-center items-center [font-family:Pixelify_Sans] text-[48px] opacity-0 hover:opacity-100 hover:bg-blue-500 hover:bg-opacity-25 hover:ring-4 hover:ring-blue-500 hover:ring-inset'>
-					{player ? (
-						<Velocity />
-					) : (
-						Boolean(tile.toughness) && tile.toughness
+				<AnimatePresence>
+					{shop && <ShopIndication tile={tile} />}
+					{!player && health < 1 && (
+						<motion.div
+							className='absolute inset-0 z-10 transition-all duration-100'
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 - health }}
+							style={{ opacity: 1 - health }}
+							transition={{
+								duration: 0.1,
+							}}
+						>
+							<img
+								src={brokenOverlay}
+								className='w-[64px] h-[64px] [image-rendering:pixelated]'
+							/>
+						</motion.div>
 					)}
-				</div>
+				</AnimatePresence>
 				<img
 					src={tile.image}
-					className='w-[64px] h-[64px] [image-rendering:pixelated]'
+					className='absolute inset w-[64px] h-[64px] [image-rendering:pixelated] z-10'
 				/>
 			</div>
 		</motion.div>

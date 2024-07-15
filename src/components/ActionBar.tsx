@@ -36,8 +36,9 @@ function ActionBar() {
 
 	function reset() {
 		update((state) => {
-			state.position.x = 2;
-			state.position.y = -5;
+			state.position.x = tiles.homePortal.portalTo.x;
+			state.position.y = tiles.homePortal.portalTo.y;
+			state.dimension = tiles.homePortal.portalTo.dimension;
 			state.world = {};
 			state.run++;
 			state.velocity = 0;

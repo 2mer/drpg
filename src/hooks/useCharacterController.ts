@@ -4,7 +4,7 @@ import { hashPos, useWorld } from "./useWorld";
 import tiles from "../logic/world/tiles";
 
 export default function useCharacterController() {
-	const [, update] = useGameState();
+	const [state, update] = useGameState();
 	const world = useWorld();
 
 	function tryGo(posTransformer: (pos: { x: number, y: number }) => void) {
@@ -55,6 +55,10 @@ export default function useCharacterController() {
 		})
 	}
 
+	const interact = () => {
+		const tile = world.at(state.dimension, state.position.x, state.position.y, true);
+		world.emit('interact', { dimension: state.dimension, x: state.position.x, y: state.position.y, tile, preventDefault: false });
+	};
 	const goDown = () => tryGo((pos) => { pos.y++; });
 	const goLeft = () => tryGo((pos) => { pos.x-- });
 	const goRight = () => tryGo((pos) => { pos.x++ });
@@ -69,5 +73,8 @@ export default function useCharacterController() {
 
 		['d', goRight],
 		['ArrowRight', goRight],
+
+		['w', interact],
+		['ArrowUp', interact],
 	]);
 }

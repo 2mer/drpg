@@ -2,7 +2,7 @@ import { createContext } from "@sgty/kontext-react";
 import { useGameState } from "./useGameState";
 import { useEffect, useMemo } from "react";
 import { generateTile } from "../logic/world/generation";
-import tiles, { ITile } from "../logic/world/tiles";
+import tiles, { isPortal, isShop, ITile } from "../logic/world/tiles";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../logic/world/constants";
 import EventEmitter from "eventemitter3";
 
@@ -15,6 +15,7 @@ export type WorldEvents = {
 	tryMove: (e: { dimension: string, x: number, y: number, preventDefault: boolean }) => void;
 	damage: (e: { dimension: string, x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
 	break: (e: { dimension: string, x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
+	interact: (e: { dimension: string, x: number, y: number, preventDefault: boolean, tile: ITile }) => void;
 }
 
 export const WorldContext = createContext(() => {
@@ -24,8 +25,8 @@ export const WorldContext = createContext(() => {
 
 		const events = new EventEmitter<WorldEvents>();
 
-		function at(dimension: string, x: number, y: number) {
-			if ((x === state.position.x) && (y === state.position.y)) return tiles.drill;
+		function at(dimension: string, x: number, y: number, ignorePlayer = false) {
+			if (!ignorePlayer && (x === state.position.x) && (y === state.position.y)) return tiles.drill;
 
 			const hashed = state.world[hashPos(x, y)];
 			if (hashed) return hashed;
@@ -57,20 +58,39 @@ export const WorldContext = createContext(() => {
 			const tile = world.at(dimension, x, y);
 
 
-			if (tile.id === tiles.homePortal.id) {
+			if (isPortal(tile)) {
+				const { portalTo } = tile;
+
 				e.preventDefault = true;
 
 				update(state => {
-					state.position.x = 2;
-					state.position.y = -5;
+					state.position.x = portalTo.x;
+					state.position.y = portalTo.y;
 					state.velocity = 0;
 					state.run++;
 					state.world = {};
 					state.currency += state.pendingCurrency;
 					state.pendingCurrency = 0;
-					state.dimension = 'overworld';
+					state.dimension = portalTo.dimension;
 				})
 
+				return;
+			}
+		})
+
+		world.events.on('interact', (e) => {
+			const { tile } = e;
+
+			console.log('yoooo', tile)
+
+			if (isShop(tile)) {
+				if (state.currency < tile.price) return;
+				if (state.upgrades.includes(tile.id)) return;
+
+				update(state => {
+					tile.onBuy(state);
+					state.upgrades.push(tile.id);
+				})
 				return;
 			}
 		})

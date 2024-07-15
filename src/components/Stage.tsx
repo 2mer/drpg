@@ -2,13 +2,14 @@ import Tile from './Tile';
 import { hashPos, useWorld, WorldContext } from '../hooks/useWorld';
 import useCharacterController from '../hooks/useCharacterController';
 import { useGameState } from '../hooks/useGameState';
-import { isPlayer } from '../logic/world/tiles';
+import tiles, { isPlayer } from '../logic/world/tiles';
 import { AnimatePresence } from 'framer-motion';
 import downImage from '../assets/ui/down.png';
 import NumberRenderer from './NumberRenderer';
 import DepthGauge from './DepthGauge';
 import ActionBar from './ActionBar';
 import CurrencyGauge from './CurrencyGauge';
+import { regionAt } from '../logic/world/generation';
 
 function Stage() {
 	const [state, update] = useGameState();
@@ -22,6 +23,13 @@ function Stage() {
 	window.update = update;
 
 	useCharacterController();
+
+	const region = regionAt(
+		state.dimension,
+		state.position.x,
+		state.position.y
+	);
+	const stageBg = region?.background ?? region?.image ?? tiles.air.image;
 
 	return (
 		<div className='flex flex-col w-full h-full items-center justify-center bg-blue-950'>
@@ -45,35 +53,71 @@ function Stage() {
 				{/* depth */}
 				<DepthGauge />
 
-				{/* grid */}
-				<div className='[grid-column:2] [grid-row:2]  w-[calc(64px*5)] h-[calc(64px*5)] relative bg-black'>
-					<AnimatePresence>
-						{world.tiles.flatMap((row, iY) =>
-							row.map((tile, iX) => {
-								const worldX = iX;
-								const worldY = state.position.y + iY;
-								const player = isPlayer(tile);
+				{/* bg area */}
+				<div className='[grid-column:2] [grid-row:2] w-full h-full z-0 bg-black' />
 
-								return (
-									<Tile
-										key={
-											player
-												? 'player'
-												: hashPos(worldX, worldY) +
-												  '-' +
-												  state.run
-										}
-										x={worldX}
-										y={worldY}
-										gx={iX}
-										gy={iY}
-										tile={tile}
-										run={state.run}
-									/>
-								);
-							})
-						)}
-					</AnimatePresence>
+				{/* bg overlay */}
+				<div
+					className='[grid-column:2] [grid-row:2] w-full h-full z-20 [image-rendering:pixelated] opacity-15'
+					style={{
+						backgroundImage: `url("${stageBg}")`,
+						backgroundRepeat: 'repeat',
+						backgroundSize: '64px',
+						backgroundPositionY: (state.position.y * -64) / 4,
+						transition:
+							'background-image 700ms, background-position-y 250ms linear',
+					}}
+				/>
+
+				{/* grid */}
+				<div className='[grid-column:2] [grid-row:2]  w-[calc(64px*5)] h-[calc(64px*5)] relative z-30 overflow-hidden'>
+					<div
+						className='w-full h-full'
+						style={{
+							filter: [
+								...[
+									[1, 0],
+									[-1, 0],
+									[0, 1],
+									[0, -1],
+								]
+									.map((c) => c.map((e) => e * 2))
+									.map(
+										(c) =>
+											`drop-shadow(${c[0]}px ${c[1]}px 0 black)`
+									),
+								'drop-shadow(0 0 2px black)',
+							].join(' '),
+						}}
+					>
+						<AnimatePresence>
+							{world.tiles.flatMap((row, iY) =>
+								row.map((tile, iX) => {
+									const worldX = iX;
+									const worldY = state.position.y + iY;
+									const player = isPlayer(tile);
+
+									return (
+										<Tile
+											key={
+												player
+													? 'player'
+													: hashPos(worldX, worldY) +
+													  '-' +
+													  state.run
+											}
+											x={worldX}
+											y={worldY}
+											gx={iX}
+											gy={iY}
+											tile={tile}
+											run={state.run}
+										/>
+									);
+								})
+							)}
+						</AnimatePresence>
+					</div>
 				</div>
 
 				{/* actions */}

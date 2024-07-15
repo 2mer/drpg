@@ -6,12 +6,15 @@ import { ITile } from "../logic/world/tiles";
 export type GameState = {
 	currency: number,
 	pendingCurrency: number,
-	upgrades: [],
+	upgrades: string[],
 	dimension: string,
 	position: { x: number, y: number },
 	velocity: number;
 	falling: boolean,
 	run: number,
+	stats: {
+		armor: number,
+	}
 	world: { [key: string]: ITile },
 	preferences: {
 		currencyDisplay?: 'both' | 'bank' | 'pending',
@@ -23,6 +26,9 @@ export function useGameState() {
 		key: 'drpg-game-state',
 		getInitialValueInEffect: false,
 		defaultValue: {
+			stats: {
+				armor: 0,
+			},
 			dimension: 'tutorial',
 			currency: 0,
 			pendingCurrency: 0,

@@ -4,20 +4,23 @@ import { twJoin } from 'tailwind-merge';
 const TILES = 4;
 const SIZE_SCREEN = 64 * TILES;
 const SIZE_PIXELS = 9 * TILES;
-const BARS = SIZE_PIXELS / 2;
+export const BARS = SIZE_PIXELS / 2;
 const PX = SIZE_SCREEN / SIZE_PIXELS;
 
 const PALLETTE = [
 	'transparent',
 	'white',
-	'lime',
-	'green',
-	'blue',
-	'purple',
-	'magenta',
-	'orange',
-	'red',
+	'#99e550',
+	'#5b6ee1',
+	'#b86fd4',
+	'#dc49b6',
+	'#d95763',
+	'#df7126',
 ];
+
+export function tierPip(tier: number) {
+	return Math.pow(BARS, tier);
+}
 
 export type Orientation = 'horizontal' | 'vertical';
 export type OverflowStrategy = 'clamp' | 'cyclic';
@@ -69,11 +72,8 @@ function NumberRenderer({
 		}
 	}
 
-	// const bgColor = PALLETTE[d];
 	const bgColor = 'transparent';
 	const fgColor = PALLETTE[d + 1];
-
-	console.log({ clamped, nearestPow, nextThreshold, d, r });
 
 	function createGradient(bars: number, bg: boolean) {
 		const style = {

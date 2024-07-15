@@ -17,9 +17,13 @@ export function getWeighted<T>(r: number, entries: ([weight: number, item: T])[]
 	return entries[entries.length - 1][1];
 }
 
+export function regionAt(dimension: string, x: number, y: number) {
+	return regions[dimension].find(r => r.contains(x, y));
+}
+
 export function generateTile(dimension: string, x: number, y: number): ITile {
 
-	const matchingRegion = regions[dimension].find(r => r.contains(x, y));
+	const matchingRegion = regionAt(dimension, x, y);
 
 	if (!matchingRegion) return tiles.air;
 
