@@ -61,7 +61,7 @@ export function store({ currency, pipValue, items, ...rest }: Omit<Region, 'cont
 	const shopRows = Array.from({ length: BARS - 1 }, (_, idx) => {
 		const [item1, item2] = itemsByPrice?.[idx + 1] ?? [];
 
-		return [item1 ? 's' : '#', ' ', ' ', ' ', item2 ? 's' : '#']
+		return [item1 ? 's' : '#', ' ', 'l', ' ', item2 ? 's' : '#']
 	})
 
 	return [
@@ -76,6 +76,7 @@ export function store({ currency, pipValue, items, ...rest }: Omit<Region, 'cont
 					'#': tiles.hangar,
 					'b': tiles.box,
 					'h': tiles.homePortal,
+					'l': tiles.ladder,
 					'o': tiles.overworldPortal,
 					'c': currency,
 					's': Object.values(itemsByPrice).flat(),

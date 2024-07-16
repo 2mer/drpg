@@ -14,7 +14,7 @@ function ShopIndication({ tile }: { tile: ITile }) {
 			animate={{ opacity: 1 }}
 			src={checkIcon}
 			className='absolute inset-0  z-30 w-full h-full [image-rendering:pixelated]'
-			style={{ filter: 'drop-shadow(0 0 4px white)' }}
+			style={{ filter: 'drop-shadow(0 0 4px black)' }}
 		/>
 	);
 }

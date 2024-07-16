@@ -213,6 +213,17 @@ const tiles = {
 		score: 0,
 	},
 
+	ladder: {
+		id: 'ladder',
+		name: 'Ladder',
+		image: images.ladder,
+		toughness: 0,
+		score: 0,
+
+		onInteract: (state: GameState) => {
+			state.position.y--;
+		}
+	},
 
 	whiteCurrency: currency('white'),
 	greenCurrency: currency('green'),
@@ -252,6 +263,12 @@ export type IShop = ITile & { price: number, onBuy: (state: GameState) => void }
 export function isShop(tile: ITile): tile is IShop {
 	return 'price' in tile;
 }
+
+export type IInteractive = ITile & { onInteract: (state: GameState) => void };
+export function isInteractive(tile: ITile): tile is IInteractive {
+	return 'onInteract' in tile;
+}
+
 
 export function Shop(shop: IShop) {
 	return shop;

@@ -2,7 +2,7 @@ import { createContext } from "@sgty/kontext-react";
 import { useGameState } from "./useGameState";
 import { useEffect, useMemo } from "react";
 import { generateTile } from "../logic/world/generation";
-import tiles, { isPortal, isShop, ITile } from "../logic/world/tiles";
+import tiles, { isInteractive, isPortal, isShop, ITile } from "../logic/world/tiles";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../logic/world/constants";
 import EventEmitter from "eventemitter3";
 
@@ -81,8 +81,6 @@ export const WorldContext = createContext(() => {
 		world.events.on('interact', (e) => {
 			const { tile } = e;
 
-			console.log('yoooo', tile)
-
 			if (isShop(tile)) {
 				if (state.currency < tile.price) return;
 				if (state.upgrades.includes(tile.id)) return;
@@ -92,6 +90,12 @@ export const WorldContext = createContext(() => {
 					state.upgrades.push(tile.id);
 				})
 				return;
+			}
+
+			if (isInteractive(tile)) {
+				update(state => {
+					tile.onInteract(state);
+				})
 			}
 		})
 	}, [world])
