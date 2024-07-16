@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import tiles, { isPlayer, isShop, ITile } from '../logic/world/tiles';
-import Velocity from './Velocity';
 import { hashPos } from '../hooks/useWorld';
 import brokenOverlay from '../assets/tiles/broken.png';
 import ShopIndication from './ShopIndication';
