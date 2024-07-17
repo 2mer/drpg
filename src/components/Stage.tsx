@@ -2,7 +2,7 @@ import Tile from './Tile';
 import { hashPos, useWorld, WorldContext } from '../hooks/useWorld';
 import useCharacterController from '../hooks/useCharacterController';
 import { useGameState } from '../hooks/useGameState';
-import tiles, { isPlayer } from '../logic/world/tiles';
+import tiles from '../logic/world/tiles';
 import { AnimatePresence } from 'framer-motion';
 import downImage from '../assets/ui/down.png';
 import NumberRenderer from './NumberRenderer';
