@@ -10,6 +10,7 @@ import DepthGauge from './DepthGauge';
 import ActionBar from './ActionBar';
 import CurrencyGauge from './CurrencyGauge';
 import { regionAt } from '../logic/world/generation';
+import { WORLD_HEIGHT_PAD } from '../logic/world/constants';
 
 function Stage() {
 	const [state, update] = useGameState();
@@ -94,28 +95,62 @@ function Stage() {
 							{world.tiles.flatMap((row, iY) =>
 								row.map((tile, iX) => {
 									const worldX = iX;
-									const worldY = state.position.y + iY;
-									const player = isPlayer(tile);
+									const worldY =
+										state.position.y +
+										iY -
+										WORLD_HEIGHT_PAD;
 
 									return (
 										<Tile
 											key={
-												player
-													? 'player'
-													: hashPos(worldX, worldY) +
-													  '-' +
-													  state.run
+												hashPos(worldX, worldY) +
+												'-' +
+												state.run
 											}
 											x={worldX}
 											y={worldY}
 											gx={iX}
-											gy={iY}
+											gy={iY - WORLD_HEIGHT_PAD}
 											tile={tile}
 											run={state.run}
 										/>
 									);
 								})
 							)}
+						</AnimatePresence>
+					</div>
+				</div>
+
+				{/* grid */}
+				<div className='[grid-column:2] [grid-row:2]  w-[calc(64px*5)] h-[calc(64px*5)] relative z-40 overflow-hidden'>
+					<div
+						className='w-full h-full'
+						style={{
+							filter: [
+								...[
+									[1, 0],
+									[-1, 0],
+									[0, 1],
+									[0, -1],
+								]
+									.map((c) => c.map((e) => e * 2))
+									.map(
+										(c) =>
+											`drop-shadow(${c[0]}px ${c[1]}px 0 black)`
+									),
+								'drop-shadow(0 0 2px black)',
+							].join(' '),
+						}}
+					>
+						<AnimatePresence>
+							<Tile
+								x={state.position.x}
+								y={state.position.y}
+								gx={state.position.x}
+								gy={0}
+								tile={world.playerTile}
+								run={state.run}
+							/>
 						</AnimatePresence>
 					</div>
 				</div>

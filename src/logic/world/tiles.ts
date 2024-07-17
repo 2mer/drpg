@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import { tierPip } from "../../components/NumberRenderer";
 import { GameState } from "../../hooks/useGameState";
+import { ValueOrCompute } from "../../util";
 
 function last<T extends any[]>(arr: T) {
 	return arr[arr.length - 1];
@@ -187,7 +188,7 @@ const tiles = {
 		portalTo: {
 			dimension: 'overworld',
 			x: 2,
-			y: -5,
+			y: (state: GameState) => state.stats.startingY,
 		}
 	},
 
@@ -233,12 +234,42 @@ const tiles = {
 	redCurrency: currency('red'),
 	orangeCurrency: currency('orange'),
 
+	...generateItems('dropHeight', 7, (id, level) => Shop({
+		id,
+		name: 'Drop Height ' + level,
+		image: items[id],
+		price: tierPip(0) * (level * 2),
+		onBuy(state: GameState) {
+			state.stats.startingY -= 1;
+		},
+	})),
+
+	...generateItems('weight', 7, (id, level) => Shop({
+		id,
+		name: 'Weight ' + level,
+		image: items[id],
+		price: tierPip(0) * ((level * 2)),
+		onBuy(state: GameState) {
+			state.stats.weight += 1;
+		},
+	})),
+
+	...generateItems('generator', 7, (id, level) => Shop({
+		id,
+		name: 'Generator ' + level,
+		image: items[id],
+		price: tierPip(1) * ((level * 2)),
+		onBuy(state: GameState) {
+			state.stats.generation += 1;
+		},
+	})),
+
 	woodenShield: Shop({
 		id: 'woodenShield',
 		name: 'Wooden Shield',
 		image: items.woodenShield,
 		price: tierPip(0) * 5,
-		onBuy(state) {
+		onBuy(state: GameState) {
 			state.stats.armor += 1;
 		},
 		score: 0,
@@ -248,13 +279,26 @@ const tiles = {
 
 } satisfies { [key: string]: ITile }
 
+// function dropHeightItem(id: string, level: number) {
+// 	return 
+// }
+
+type GenerateRange<N extends number, Result extends unknown[] = []> = Result['length'] extends N
+	? Exclude<Result['length'], 0>
+	: Exclude<Result['length'], 0> | GenerateRange<N, [...Result, unknown]>;
+function generateItems<TPrefix extends string, T extends number>(id: TPrefix, number: T, gen: (id: string, level: number) => IShop) {
+	const ret = Object.fromEntries(Array.from({ length: number }, (_, idx) => [id + (idx + 1), gen(id + (idx + 1), idx + 1)]));
+	return ret as { [key in GenerateRange<T> as `${TPrefix}${key}`]: IShop }
+}
+
 export function isPlayer(tile: ITile) {
 	return tile.id === tiles.drill.id;
 }
 
 export default tiles;
 
-export type IPortal = ITile & { portalTo: { dimension: string, x: number, y: number } };
+export type NumberOrState = ValueOrCompute<number, (state: GameState) => number>;
+export type IPortal = ITile & { portalTo: { dimension: string, x: NumberOrState, y: NumberOrState } };
 export function isPortal(tile: ITile): tile is IPortal {
 	return 'portalTo' in tile;
 }
@@ -270,8 +314,8 @@ export function isInteractive(tile: ITile): tile is IInteractive {
 }
 
 
-export function Shop(shop: IShop) {
-	return shop;
+export function Shop(shop: Omit<IShop, 'toughness' | 'score'>) {
+	return shop as IShop;
 }
 
 export function storePortal(dimension: string) {

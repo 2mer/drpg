@@ -3,8 +3,9 @@ import { useGameState } from "./useGameState";
 import { useEffect, useMemo } from "react";
 import { generateTile } from "../logic/world/generation";
 import tiles, { isInteractive, isPortal, isShop, ITile } from "../logic/world/tiles";
-import { WORLD_HEIGHT, WORLD_WIDTH } from "../logic/world/constants";
+import { WORLD_HEIGHT, WORLD_HEIGHT_PAD, WORLD_WIDTH } from "../logic/world/constants";
 import EventEmitter from "eventemitter3";
+import { handleValueOrCompute } from "../util";
 
 export function hashPos(x: number, y: number) {
 	return `${x}_${y}`;
@@ -36,9 +37,10 @@ export const WorldContext = createContext(() => {
 
 		return {
 			at,
-			tiles: Array(WORLD_HEIGHT).fill(null).map((_, iY) => {
-				return Array(WORLD_WIDTH).fill(null).map((_, iX) => at(state.dimension, iX, state.position.y + iY))
+			tiles: Array(WORLD_HEIGHT + WORLD_HEIGHT_PAD * 2).fill(null).map((_, iY) => {
+				return Array(WORLD_WIDTH).fill(null).map((_, iX) => at(state.dimension, iX, state.position.y + iY - WORLD_HEIGHT_PAD, true))
 			}),
+			playerTile: at(state.dimension, state.position.x, state.position.y),
 
 			events,
 
@@ -64,8 +66,8 @@ export const WorldContext = createContext(() => {
 				e.preventDefault = true;
 
 				update(state => {
-					state.position.x = portalTo.x;
-					state.position.y = portalTo.y;
+					state.position.x = handleValueOrCompute(portalTo.x, state);
+					state.position.y = handleValueOrCompute(portalTo.y, state);
 					state.velocity = 0;
 					state.run++;
 					state.world = {};
@@ -75,6 +77,12 @@ export const WorldContext = createContext(() => {
 				})
 
 				return;
+			}
+
+			if (y % 10 === 0) {
+				update(state => {
+					state.velocity += state.stats.generation;
+				})
 			}
 		})
 
@@ -88,6 +96,7 @@ export const WorldContext = createContext(() => {
 				update(state => {
 					tile.onBuy(state);
 					state.upgrades.push(tile.id);
+					state.currency -= tile.price;
 				})
 				return;
 			}

@@ -4,7 +4,7 @@ import tiles, { IShop, ITile, storePortal } from "./tiles";
 import infoTexture from '../../assets/ui/info.png';
 import skyTexture from '../../assets/tiles/sky.png';
 import { group, mapValues } from "radash";
-import { BARS } from "../../components/NumberRenderer";
+import { BARS, tierPip } from "../../components/NumberRenderer";
 
 export type Region = {
 	id: string;
@@ -56,7 +56,7 @@ export function template<T extends Record<string, ITile | ITile[] | ((x: number,
 
 export function store({ currency, pipValue, items, ...rest }: Omit<Region, 'contains' | 'generateTile' | 'image'> & { currency: ITile, pipValue: number, items: IShop[] }) {
 
-	const itemsByPrice = mapValues(group(items, i => i.price), v => (v ?? []).slice(0, 2));
+	const itemsByPrice = mapValues(group(items, i => i.price / pipValue), v => (v ?? []).slice(0, 2));
 
 	const shopRows = Array.from({ length: BARS - 1 }, (_, idx) => {
 		const [item1, item2] = itemsByPrice?.[idx + 1] ?? [];
@@ -145,6 +145,7 @@ export default {
 			...structure(i = 0, template(
 				{
 					' ': tiles.air,
+					'l': tiles.ladder,
 					'#': tiles.hangar,
 					'b': tiles.box,
 					'h': tiles.homePortal,
@@ -164,24 +165,24 @@ export default {
 					],
 				}, [
 				['o', ' ', ' ', ' ', 'o'],
-				['#', ' ', ' ', ' ', '#'],
-				['#', ' ', ' ', ' ', '#'],
-				['s', 'p', ' ', 'p', 's'],
-				['#', ' ', ' ', ' ', '#'],
-				['#', ' ', ' ', ' ', '#'],
-				['s', 'p', ' ', 'p', 's'],
-				['#', ' ', ' ', ' ', '#'],
-				['#', ' ', ' ', ' ', '#'],
-				['s', 'p', ' ', 'p', 's'],
-				['#', ' ', ' ', ' ', '#'],
-				['#', ' ', ' ', ' ', '#'],
-				['s', 'p', ' ', 'p', 's'],
-				['#', ' ', ' ', ' ', '#'],
-				['#', ' ', ' ', ' ', '#'],
-				['s', 'p', ' ', 'p', 's'],
-				['#', ' ', ' ', ' ', '#'],
-				['#', ' ', ' ', ' ', '#'],
-				['h', ' ', ' ', ' ', 'h'],
+				['#', ' ', 'l', ' ', '#'],
+				['#', ' ', 'l', ' ', '#'],
+				['s', 'p', 'l', 'p', 's'],
+				['#', ' ', 'l', ' ', '#'],
+				['#', ' ', 'l', ' ', '#'],
+				['s', 'p', 'l', 'p', 's'],
+				['#', ' ', 'l', ' ', '#'],
+				['#', ' ', 'l', ' ', '#'],
+				['s', 'p', 'l', 'p', 's'],
+				['#', ' ', 'l', ' ', '#'],
+				['#', ' ', 'l', ' ', '#'],
+				['s', 'p', 'l', 'p', 's'],
+				['#', ' ', 'l', ' ', '#'],
+				['#', ' ', 'l', ' ', '#'],
+				['s', 'p', 'l', 'p', 's'],
+				['#', ' ', 'l', ' ', '#'],
+				['#', ' ', 'l', ' ', '#'],
+				['h', ' ', 'l', ' ', 'h'],
 				['#', 'o', 'o', 'o', '#'],
 			]
 			))
@@ -196,18 +197,41 @@ export default {
 	],
 
 	whiteStore: store({
-		pipValue: 1,
+		pipValue: tierPip(0),
 		currency: tiles.whiteCurrency,
 		id: 'whiteStore',
 		name: 'White Store',
 		items: [
-			tiles.woodenShield,
-			tiles.woodenShield,
-			tiles.woodenShield,
-			tiles.woodenShield,
-			tiles.woodenShield,
-			tiles.woodenShield,
-			tiles.woodenShield,
+			tiles.dropHeight1,
+			tiles.dropHeight2,
+			tiles.dropHeight3,
+			tiles.dropHeight4,
+			tiles.dropHeight5,
+			tiles.dropHeight6,
+			tiles.dropHeight7,
+			tiles.weight1,
+			tiles.weight2,
+			tiles.weight3,
+			tiles.weight4,
+			tiles.weight5,
+			tiles.weight6,
+			tiles.weight7,
+		],
+	}),
+
+	greenStore: store({
+		pipValue: tierPip(1),
+		currency: tiles.whiteCurrency,
+		id: 'whiteStore',
+		name: 'White Store',
+		items: [
+			tiles.generator1,
+			tiles.generator2,
+			tiles.generator3,
+			tiles.generator4,
+			tiles.generator5,
+			tiles.generator6,
+			tiles.generator7,
 		],
 	}),
 

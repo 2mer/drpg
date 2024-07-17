@@ -20,7 +20,7 @@ export default function useCharacterController() {
 				if (newPos.x > 4) return;
 
 				if (canGainMomentum && newPos.y > state.position.y) {
-					state.velocity++;
+					state.velocity += state.stats.weight;
 				}
 
 

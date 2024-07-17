@@ -46,7 +46,7 @@ function Tile({
 					{shop && <ShopIndication tile={tile} />}
 					{!player && health < 1 && (
 						<motion.div
-							className='absolute inset-0 z-10 transition-all duration-100'
+							className='absolute inset-0 z-50 transition-all duration-100'
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 - health }}
 							style={{ opacity: 1 - health }}

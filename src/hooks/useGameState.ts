@@ -14,6 +14,9 @@ export type GameState = {
 	run: number,
 	stats: {
 		armor: number,
+		startingY: number,
+		weight: number,
+		generation: number,
 	}
 	world: { [key: string]: ITile },
 	preferences: {
@@ -28,6 +31,9 @@ export function useGameState() {
 		defaultValue: {
 			stats: {
 				armor: 0,
+				startingY: -3,
+				weight: 1,
+				generation: 0,
 			},
 			dimension: 'tutorial',
 			currency: 0,
