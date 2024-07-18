@@ -59,7 +59,6 @@ export const WorldContext = createContext(() => {
 			const { x, y, dimension } = e;
 			const tile = world.at(dimension, x, y);
 
-
 			if (isPortal(tile)) {
 				const { portalTo } = tile;
 
@@ -107,6 +106,10 @@ export const WorldContext = createContext(() => {
 				})
 			}
 		})
+
+		return () => {
+			world.events.removeAllListeners();
+		}
 	}, [world])
 
 	return world;

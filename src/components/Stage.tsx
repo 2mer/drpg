@@ -11,6 +11,7 @@ import ActionBar from './ActionBar';
 import CurrencyGauge from './CurrencyGauge';
 import { regionAt } from '../logic/world/generation';
 import { WORLD_HEIGHT_PAD } from '../logic/world/constants';
+import { block, Point } from '../util';
 
 function Stage() {
 	const [state, update] = useGameState();
@@ -23,7 +24,7 @@ function Stage() {
 	// @ts-ignore
 	window.update = update;
 
-	useCharacterController();
+	const controllerHandles = useCharacterController();
 
 	const region = regionAt(
 		state.dimension,
@@ -31,6 +32,11 @@ function Stage() {
 		state.position.y
 	);
 	const stageBg = region?.background ?? region?.image ?? tiles.air.image;
+
+	const statePos = new Point(state.position.x, state.position.y);
+	const downPos = statePos.add(0, 1);
+	const leftPos = statePos.add(-1, 0);
+	const rightPos = statePos.add(1, 0);
 
 	return (
 		<div className='flex flex-col w-full h-full items-center justify-center bg-blue-950'>
@@ -100,6 +106,29 @@ function Stage() {
 										iY -
 										WORLD_HEIGHT_PAD;
 
+									const onClick = block(() => {
+										const worldPos = new Point(
+											worldX,
+											worldY
+										);
+
+										if (worldPos.equals(downPos)) {
+											return controllerHandles.goDown;
+										}
+
+										if (worldPos.equals(leftPos)) {
+											return controllerHandles.goLeft;
+										}
+
+										if (worldPos.equals(rightPos)) {
+											return controllerHandles.goRight;
+										}
+
+										if (worldPos.equals(statePos)) {
+											return controllerHandles.interact;
+										}
+									});
+
 									return (
 										<Tile
 											key={
@@ -113,6 +142,7 @@ function Stage() {
 											gy={iY - WORLD_HEIGHT_PAD}
 											tile={tile}
 											run={state.run}
+											onClick={onClick}
 										/>
 									);
 								})
@@ -122,7 +152,7 @@ function Stage() {
 				</div>
 
 				{/* grid */}
-				<div className='[grid-column:2] [grid-row:2]  w-[calc(64px*5)] h-[calc(64px*5)] relative z-40 overflow-hidden'>
+				<div className='[grid-column:2] [grid-row:2]  w-[calc(64px*5)] h-[calc(64px*5)] relative z-40 overflow-hidden pointer-events-none'>
 					<div
 						className='w-full h-full'
 						style={{

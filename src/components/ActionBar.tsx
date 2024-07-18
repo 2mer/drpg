@@ -46,7 +46,23 @@ function ActionBar() {
 		});
 	}
 
-	useHotkeys([['r', reset]]);
+	function openPortal() {
+		if (
+			world.at(state.dimension, state.position.x, state.position.y + 1)
+				.id !== tiles.air.id
+		)
+			return;
+
+		update((state) => {
+			state.world[hashPos(state.position.x, state.position.y + 1)] =
+				tiles.homePortal;
+		});
+	}
+
+	useHotkeys([
+		['r', reset],
+		['e', openPortal],
+	]);
 
 	return (
 		<div className='[grid-column:2] [grid-row:3] flex'>
@@ -63,22 +79,7 @@ function ActionBar() {
 					className='w-[64px] h-[64px] [image-rendering:pixelated]'
 					src={portalButtonImage}
 					role='button'
-					onClick={() => {
-						if (
-							world.at(
-								state.dimension,
-								state.position.x,
-								state.position.y + 1
-							).id !== tiles.air.id
-						)
-							return;
-
-						update((state) => {
-							state.world[
-								hashPos(state.position.x, state.position.y + 1)
-							] = tiles.homePortal;
-						});
-					}}
+					onClick={openPortal}
 				/>
 			</ButtonDeck>
 

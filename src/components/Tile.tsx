@@ -11,6 +11,7 @@ function Tile({
 	gx,
 	gy,
 	run,
+	onClick,
 }: {
 	tile: ITile;
 	x: number;
@@ -18,6 +19,7 @@ function Tile({
 	gx: number;
 	gy: number;
 	run: number;
+	onClick?: () => void;
 }) {
 	const player = isPlayer(tile);
 	// @ts-ignore
@@ -40,6 +42,8 @@ function Tile({
 				},
 			}}
 			style={{ left: gx * 64, top: gy * 64 }}
+			onClick={onClick}
+			role={onClick ? 'button' : undefined}
 		>
 			<div className='w-[64px] h-[64px] relative'>
 				<AnimatePresence>

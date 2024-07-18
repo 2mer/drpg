@@ -3,7 +3,7 @@ import { useGameState } from "./useGameState";
 import { hashPos, useWorld } from "./useWorld";
 import tiles from "../logic/world/tiles";
 
-export default function useCharacterController() {
+export function useCharacterControllerActions() {
 	const [state, update] = useGameState();
 	const world = useWorld();
 
@@ -22,7 +22,6 @@ export default function useCharacterController() {
 				if (canGainMomentum && newPos.y > state.position.y) {
 					state.velocity += state.stats.weight;
 				}
-
 
 				if (!world.emit('move', { ...newPos, dimension, preventDefault: false }).preventDefault) {
 					posTransformer(state.position);
@@ -63,6 +62,16 @@ export default function useCharacterController() {
 	const goLeft = () => tryGo((pos) => { pos.x-- });
 	const goRight = () => tryGo((pos) => { pos.x++ });
 
+	return {
+		interact, goDown, goLeft, goRight
+	}
+}
+
+export default function useCharacterController() {
+	const handles = useCharacterControllerActions();
+
+	const { goDown, goLeft, goRight, interact } = handles;
+
 	useHotkeys([
 		['s', goDown],
 		['ArrowDown', goDown],
@@ -77,4 +86,6 @@ export default function useCharacterController() {
 		['w', interact],
 		['ArrowUp', interact],
 	]);
+
+	return handles;
 }
