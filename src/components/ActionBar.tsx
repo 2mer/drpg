@@ -7,6 +7,7 @@ import { useGameState } from '../hooks/useGameState';
 import { hashPos, useWorld } from '../hooks/useWorld';
 import tiles from '../logic/world/tiles';
 import { useHotkeys } from '@mantine/hooks';
+import { PX_RES } from '../constants';
 
 const DECK_VARIANTS = {
 	standard: buttonDeck,
@@ -19,9 +20,9 @@ const ButtonDeck = ({
 	const image = DECK_VARIANTS[variant];
 
 	return (
-		<div className='w-[64px] h-[64px] relative'>
+		<div className='w-res h-res relative'>
 			<img
-				className='w-[64px] h-[64px] [image-rendering:pixelated] absolute inset-0'
+				className='w-res h-res [image-rendering:pixelated] absolute inset-0'
 				src={image}
 			/>
 
@@ -71,12 +72,12 @@ function ActionBar() {
 				style={{
 					backgroundImage: `url("${buttonDeck}")`,
 					backgroundRepeat: 'repeat',
-					backgroundSize: '64px',
+					backgroundSize: PX_RES,
 				}}
 			/>
 			<ButtonDeck>
 				<img
-					className='w-[64px] h-[64px] [image-rendering:pixelated]'
+					className='w-res h-res [image-rendering:pixelated]'
 					src={portalButtonImage}
 					role='button'
 					onClick={openPortal}
@@ -85,7 +86,7 @@ function ActionBar() {
 
 			<ButtonDeck variant='danger'>
 				<img
-					className='w-[64px] h-[64px] [image-rendering:pixelated]'
+					className='w-res h-res [image-rendering:pixelated]'
 					src={exitButtonImage}
 					role='button'
 					onClick={reset}

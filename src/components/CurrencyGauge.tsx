@@ -45,7 +45,7 @@ function CurrencyGauge() {
 		<div className='flex flex-col-reverse [grid-column:3] [grid-row:2] bg-black'>
 			<img
 				src={image}
-				className='w-[64px] h-[64px] [image-rendering:pixelated]'
+				className='w-res h-res [image-rendering:pixelated]'
 				role='button'
 				onClick={handleClick}
 			/>

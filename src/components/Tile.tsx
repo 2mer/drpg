@@ -3,6 +3,7 @@ import tiles, { isPlayer, isShop, ITile } from '../logic/world/tiles';
 import { hashPos } from '../hooks/useWorld';
 import brokenOverlay from '../assets/tiles/broken.png';
 import ShopIndication from './ShopIndication';
+import { PIXEL_RESOLUTION } from '../constants';
 
 function Tile({
 	tile,
@@ -31,7 +32,7 @@ function Tile({
 		<motion.div
 			layout='position'
 			layoutId={player ? 'player' : hashPos(x, y) + '-' + run}
-			className='w-[64px] h-[64px] absolute'
+			className='w-res h-res absolute'
 			data-tile-id={tile.name}
 			initial={{ scale: 0 }}
 			animate={{ scale: 1 }}
@@ -41,11 +42,11 @@ function Tile({
 					modifyTarget: (target) => Math.round(target / 9) * 9,
 				},
 			}}
-			style={{ left: gx * 64, top: gy * 64 }}
+			style={{ left: gx * PIXEL_RESOLUTION, top: gy * PIXEL_RESOLUTION }}
 			onClick={onClick}
 			role={onClick ? 'button' : undefined}
 		>
-			<div className='w-[64px] h-[64px] relative'>
+			<div className='w-res h-res relative'>
 				<AnimatePresence>
 					{shop && <ShopIndication tile={tile} />}
 					{!player && health < 1 && (
@@ -60,14 +61,14 @@ function Tile({
 						>
 							<img
 								src={brokenOverlay}
-								className='w-[64px] h-[64px] [image-rendering:pixelated]'
+								className='w-res h-res [image-rendering:pixelated]'
 							/>
 						</motion.div>
 					)}
 				</AnimatePresence>
 				<img
 					src={tile.image}
-					className='absolute inset w-[64px] h-[64px] [image-rendering:pixelated] z-10'
+					className='absolute inset w-res h-res [image-rendering:pixelated] z-10'
 				/>
 			</div>
 		</motion.div>

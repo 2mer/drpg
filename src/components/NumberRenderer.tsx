@@ -1,8 +1,9 @@
 import React from 'react';
 import { twJoin } from 'tailwind-merge';
+import { PIXEL_RESOLUTION, PX_RES } from '../constants';
 
 const TILES = 4;
-const SIZE_SCREEN = 64 * TILES;
+const SIZE_SCREEN = PIXEL_RESOLUTION * TILES;
 const SIZE_PIXELS = 9 * TILES;
 export const BARS = SIZE_PIXELS / 2;
 const PX = SIZE_SCREEN / SIZE_PIXELS;
@@ -88,7 +89,7 @@ function NumberRenderer({
 						width: `${Math.floor((bars / BARS) * 100)}%`,
 						height: '100%',
 						backgroundRepeat: 'repeat-x',
-						backgroundSize: `${PX * 2}px 64px`,
+						backgroundSize: `${PX * 2}px ${PX_RES}`,
 				  }
 				: {
 						top: 0,
@@ -96,7 +97,7 @@ function NumberRenderer({
 						height: `${Math.floor((bars / BARS) * 100)}%`,
 						width: '100%',
 						backgroundRepeat: 'repeat-y',
-						backgroundSize: `64px ${PX * 2}px`,
+						backgroundSize: `${PX_RES} ${PX * 2}px`,
 				  }),
 		};
 
@@ -107,9 +108,7 @@ function NumberRenderer({
 		<div
 			className={twJoin(
 				'relative bg-black flex justify-stretch items-stretch',
-				orientation === 'horizontal'
-					? 'w-[calc(64px*4)] h-[64px]'
-					: 'w-[64px] h-[calc(64px*4)]'
+				orientation === 'horizontal' ? 'w-res-4 h-res' : 'w-res h-res-4'
 			)}
 			style={{
 				...style,

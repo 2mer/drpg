@@ -29,7 +29,7 @@ function DepthGauge() {
 
 	return (
 		<div className='flex flex-col-reverse [grid-column:1] [grid-row:2] bg-black'>
-			<div className='flex w-[64px] h-[64px] relative'>
+			<div className='flex w-res h-res relative'>
 				<img
 					src={image}
 					className='absolute inset-0 w-full h-full [image-rendering:pixelated]'
