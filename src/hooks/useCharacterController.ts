@@ -1,69 +1,21 @@
 import { useHotkeys } from "@mantine/hooks";
 import { useGameState } from "./useGameState";
-import { hashPos, useWorld } from "./useWorld";
-import tiles from "../logic/world/tiles";
+import { useWorld } from "./useWorld";
+import { usePeripheral } from "./usePeripheral";
 
 export function useCharacterControllerActions() {
-	const [state, update] = useGameState();
+	const [state] = useGameState();
 	const world = useWorld();
 
-	function tryGo(posTransformer: (pos: { x: number, y: number }) => void) {
-		update((state) => {
-			const { dimension } = state;
-			const newPos = { ...state.position };
-			posTransformer(newPos);
-
-			function moveToPos({ canGainMomentum = true } = {}) {
-				if (world.emit('tryMove', { ...newPos, dimension, preventDefault: false }).preventDefault) return;
-
-				if (newPos.x < 0) return;
-				if (newPos.x > 4) return;
-
-				if (canGainMomentum && newPos.y > state.position.y) {
-					state.velocity += state.stats.weight;
-				}
-
-				if (!world.emit('move', { ...newPos, dimension, preventDefault: false }).preventDefault) {
-					posTransformer(state.position);
-				}
-			}
-
-			const tile = world.at(dimension, newPos.x, newPos.y);
-			if (tile.toughness > 0) {
-				if (state.velocity < 1) return;
-
-				if (world.emit('damage', { ...newPos, dimension, preventDefault: false, tile }).preventDefault) return;
-
-				let newTile = { ...tile };
-				newTile.toughness--;
-				state.velocity--;
-
-				if (newTile.toughness === 0) {
-					if (world.emit('break', { ...newPos, dimension, preventDefault: false, tile: newTile }).preventDefault) return;
-
-					state.pendingCurrency += tile.score;
-
-					newTile = tiles.air;
-					moveToPos({ canGainMomentum: false });
-				}
-
-				state.world[hashPos(newPos.x, newPos.y)] = newTile;
-			} else {
-				moveToPos();
-			}
-		})
-	}
+	const engines = usePeripheral('engines');
 
 	const interact = () => {
 		const tile = world.at(state.dimension, state.position.x, state.position.y, true);
 		world.emit('interact', { dimension: state.dimension, x: state.position.x, y: state.position.y, tile, preventDefault: false });
 	};
-	const goDown = () => tryGo((pos) => { pos.y++; });
-	const goLeft = () => tryGo((pos) => { pos.x-- });
-	const goRight = () => tryGo((pos) => { pos.x++ });
 
 	return {
-		interact, goDown, goLeft, goRight
+		interact, goDown: () => engines.down(), goLeft: () => engines.left(), goRight: () => engines.right()
 	}
 }
 

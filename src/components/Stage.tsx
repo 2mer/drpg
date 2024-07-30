@@ -13,6 +13,12 @@ import { regionAt } from '../logic/world/generation';
 import { WORLD_HEIGHT_PAD } from '../logic/world/constants';
 import { block, Point } from '../util';
 import { PIXEL_RESOLUTION, PX_RES } from '../constants';
+import { useEffect } from 'react';
+import { usePeripheralInternals } from '../hooks/usePeripheralInternals';
+import {
+	getPeripheralFactory,
+	PeripheralId,
+} from '../logic/peripherals/registry';
 
 function Stage() {
 	const [state, update] = useGameState();
@@ -38,6 +44,22 @@ function Stage() {
 	const downPos = statePos.add(0, 1);
 	const leftPos = statePos.add(-1, 0);
 	const rightPos = statePos.add(1, 0);
+
+	const internals = usePeripheralInternals();
+
+	useEffect(() => {
+		function getPeripherals<T extends PeripheralId[]>(...peripheralIds: T) {
+			return peripheralIds.map((id) => {
+				if (!internals.state.peripherals.includes(id)) {
+					throw new Error(`Peripheral '${id}' does not exist!`);
+				}
+
+				return getPeripheralFactory(id)(internals);
+			});
+		}
+
+		window.getPeripherals = getPeripherals;
+	}, []);
 
 	return (
 		<div

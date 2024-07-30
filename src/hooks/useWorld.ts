@@ -116,3 +116,5 @@ export const WorldContext = createContext(() => {
 })
 
 export const useWorld = WorldContext.use;
+
+export type World = ReturnType<typeof useWorld>;

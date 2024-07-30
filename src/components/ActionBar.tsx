@@ -3,11 +3,9 @@ import buttonDeck from '../assets/ui/buttonDeck.png';
 import buttonDeckDanger from '../assets/ui/buttonDeckDanger.png';
 import exitButtonImage from '../assets/ui/exit.png';
 import portalButtonImage from '../assets/ui/portal.png';
-import { useGameState } from '../hooks/useGameState';
-import { hashPos, useWorld } from '../hooks/useWorld';
-import tiles from '../logic/world/tiles';
 import { useHotkeys } from '@mantine/hooks';
 import { PX_RES } from '../constants';
+import { usePeripheral } from '../hooks/usePeripheral';
 
 const DECK_VARIANTS = {
 	standard: buttonDeck,
@@ -32,37 +30,11 @@ const ButtonDeck = ({
 };
 
 function ActionBar() {
-	const [state, update] = useGameState();
-	const world = useWorld();
-
-	function reset() {
-		update((state) => {
-			state.position.x = tiles.homePortal.portalTo.x;
-			state.position.y = tiles.homePortal.portalTo.y;
-			state.dimension = tiles.homePortal.portalTo.dimension;
-			state.world = {};
-			state.run++;
-			state.velocity = 0;
-			state.pendingCurrency = 0;
-		});
-	}
-
-	function openPortal() {
-		if (
-			world.at(state.dimension, state.position.x, state.position.y + 1)
-				.id !== tiles.air.id
-		)
-			return;
-
-		update((state) => {
-			state.world[hashPos(state.position.x, state.position.y + 1)] =
-				tiles.homePortal;
-		});
-	}
+	const system = usePeripheral('system');
 
 	useHotkeys([
-		['r', reset],
-		['e', openPortal],
+		['r', () => system.destory()],
+		['e', () => system.createPortal()],
 	]);
 
 	return (
@@ -80,7 +52,7 @@ function ActionBar() {
 					className='w-res h-res [image-rendering:pixelated]'
 					src={portalButtonImage}
 					role='button'
-					onClick={openPortal}
+					onClick={() => system.createPortal()}
 				/>
 			</ButtonDeck>
 
@@ -89,7 +61,7 @@ function ActionBar() {
 					className='w-res h-res [image-rendering:pixelated]'
 					src={exitButtonImage}
 					role='button'
-					onClick={reset}
+					onClick={() => system.destory()}
 				/>
 			</ButtonDeck>
 		</div>
